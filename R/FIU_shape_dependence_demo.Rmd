@@ -1,0 +1,121 @@
+---
+title: "FIU Demo Shape influence"
+author: "Sven Gastauer"
+date: "29/04/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ZooScatR)
+library(ggplot2)
+library(reshape2)
+```
+
+## TS shape dependence
+
+
+ZooScatR comes with a few example shapes.  
+
+Let's have a look at the included krill shapes:  
+
+```{r available_shapes}
+# filenmae of an example configuration
+fname <- paste0(system.file(package="ZooScatR"),"/extdata/configs/config_0.dat")
+#Read the parameter file
+para <- read_para(fname)
+#make flat orientation
+para$orient$angm=0
+para$orient$ang0=0
+#set the profile filename
+profname0 <- paste0(system.file(package="ZooScatR"),"/extdata/profiles/euphaus0.dat") #krill example
+para$shape$prof_name <- profname0
+krill_shape1 <- buildpos(para)
+krill_shape1$plot
+
+profname1 <- paste0(system.file(package="ZooScatR"),"/extdata/profiles/euphaus1.dat") #krill example
+para$shape$prof_name <- profname1
+krill_shape1 <- buildpos(para)
+krill_shape1$plot
+
+profname2 <- paste0(system.file(package="ZooScatR"),"/extdata/profiles/skaret.dat") #krill example
+para$shape$prof_name <- profname2
+krill_shape1 <- buildpos(para)
+krill_shape1$plot
+
+```
+   
+## TS modelling with different shapes
+
+```{r TS_with_shapes, echo=FALSE}
+misc = list(cw=1500)
+para$simu$n=para$simu$var1-para$simu$var0+1
+
+#simulate for shape1
+para$shape$prof_name <- profname0
+shape1 <- bscat(para=para, misc=misc)
+
+#simulate for shape2
+para$shape$prof_name <- profname1
+shape2 <- bscat(para=para, misc=misc)
+
+#simulate for shape 3
+para$shape$prof_name <- profname2
+shape3 <- bscat(para=para, misc=misc)
+
+TS = melt(data.frame(Freq=shape1$var,Shape1 = shape1$y,
+                     Shape2 = shape2$y,
+                     Shape3 = shape3$y),id.vars='Freq')
+ggplot(data=TS,aes(x=Freq,y=value,group=variable,color=variable))+
+  geom_line(size=1.2,alpha=0.5)+
+  scale_color_viridis_d('Shape')+
+  xlab('Frequency [kHz]')+
+  ylab('TS [dB re m2]')+
+  theme_classic()+
+  theme(text=element_text(size=16),
+        legend.position = 'top')
+```
+
+## Influence of number of integration points  
+
+Check the influence of integration elements on the model output.  
+
+For this exercise we just use shape1:  
+```{r integration_points, echo=FALSE}
+
+#simulate for shape1
+para$shape$prof_name <- profname0
+
+para$simu$ni = 10
+ni10  <- bscat(para=para, misc=misc)
+para$simu$ni = 20
+ni20  <- bscat(para=para, misc=misc)
+para$simu$ni = 50
+ni50  <- bscat(para=para, misc=misc)
+para$simu$ni = 100
+ni100  <- bscat(para=para, misc=misc)
+para$simu$ni = 200
+ni200  <- bscat(para=para, misc=misc)
+para$simu$ni = 500
+ni500  <- bscat(para=para, misc=misc)
+para$simu$ni = 1000
+ni1000  <- bscat(para=para, misc=misc)
+
+TS = melt(data.frame(Freq=ni10$var,
+                     ni10 = ni10$y,
+                     ni20 = ni20$y,
+                     ni50 = ni50$y,
+                     ni100 = ni100$y,
+                     ni200 = ni200$y,
+                     ni500 = ni500$y,
+                     ni1000 = ni1000$y),
+          id.vars='Freq')
+ggplot(data=TS,aes(x=Freq,y=value,group=variable,color=variable))+
+  geom_line(size=1.2,alpha=0.5)+
+  scale_color_viridis_d('Integration Elements')+
+  xlab('Frequency [kHz]')+
+  ylab('TS [dB re m2]')+
+  theme_classic()+
+  theme(text=element_text(size=16),
+        legend.position = 'top')
+```
