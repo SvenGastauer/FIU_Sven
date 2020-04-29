@@ -30,7 +30,7 @@ FIUSphereDemo <- function(){
       numericInput("r", "Range from transducer [m]:", 10, min = 1, max = 1000),
       numericInput("c", "Sound speed in surrounding fluid [m/s]:", 1480, min = 1400, max = 1600),
       numericInput("h", "Sound speed contrast:", 1.035, min = 0.1, max = 1.15),
-      numericInput("g", "Range from transducer:", 1.025, min = 0.1, max = 1.15),
+      numericInput("g", "Density contrast:", 1.025, min = 0.1, max = 1.15),
       numericInput("rho", "Density of surrounding fluid:", 1026.8, min = 1000, max = 1050),
       br(),
       actionButton("add_btn", "Add Simulation"),
