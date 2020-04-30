@@ -3,7 +3,7 @@ Type: Package
 Title: FIU Lecture on Scattering Models Basics
 Version: 0.1.0
 Author: Sven Gastauer
-Maintainer: Sven Gastauer sgasrauer@ucsd.edu
+Maintainer: Sven Gastauer sgastauer@ucsd.edu
 Description: FIU lecture from 29th of April 2020
     Powerpoint presentation and accompanying example scripts and apps.
 License: MIT
